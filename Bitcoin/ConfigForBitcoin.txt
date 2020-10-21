@@ -1,0 +1,91 @@
+# network size
+SIZE 1000
+
+# parameters of periodic execution
+CYCLES 10
+CYCLE_LENGTH 1000 #100s
+
+# parameters of message transfer
+MINDELAY 1000 #ns
+MAXDELAY 3000
+DROP 0
+
+# other parameters
+MAX_TRANS_PER_BLOCK 30
+REWARD 10
+TRANS_PROB 0.5
+PROB_MINER 0.20
+PROB_SMINER 0
+PROB_CPU 0.10
+PROB_GPU 0.30
+PROB_FPGA 0.30
+PROB_ASIC 0.30
+PROB_2MINERS 0.05
+REPETITION 1
+PROB_SMINER 0.3
+ONLYLATENCY false
+DELAY 1
+MAL_RATE 0.5
+SYNC 90
+
+random.seed 1234567890
+network.size SIZE
+network.node NetNode
+simulation.endtime CYCLE_LENGTH*CYCLES
+simulation.logtime CYCLE_LENGTH
+
+protocol.link IdleProtocol
+
+protocol.node net.optimization.bitcoin.protocol.BitcoinGeneralNodeProtocol
+protocol.node.linkable link
+protocol.node.step CYCLE_LENGTH
+protocol.node.transport tr
+protocol.node.transaction_prob TRANS_PROB
+protocol.node.syncrate SYNC
+
+protocol.urt UniformRandomTransport
+protocol.urt.mindelay MINDELAY
+protocol.urt.maxdelay MAXDELAY
+
+protocol.tr UnreliableTransport
+protocol.tr.transport urt
+protocol.tr.drop DROP
+
+protocol.miner net.optimization.bitcoin.protocol.BitcoinMinerProtocol
+protocol.miner.linkable link
+protocol.miner.node_protocol node
+protocol.miner.step CYCLE_LENGTH*2
+protocol.miner.max_trans_block MAX_TRANS_PER_BLOCK
+protocol.miner.reward REWARD
+
+init.1 WireKOut
+init.1.protocol link
+init.1.k 20
+
+init.2 net.optimization.bitcoin.initializer.BitcoinNodeInitializer
+init.2.pminer PROB_MINER                                        
+init.2.p_self_miner PROB_SMINER 
+init.2.pcpu PROB_CPU
+init.2.pgpu PROB_GPU
+init.2.pfpga PROB_FPGA
+init.2.pasic PROB_ASIC
+init.2.max_balance 1000
+init.2.mal_rate MAL_RATE
+
+init.3 CDScheduler
+init.3.protocol node
+init.3.randstart
+
+init.4 CDScheduler
+init.4.protocol miner
+init.4.randstart
+
+
+control.oracle net.optimization.bitcoin.control.BitcoinNodeConsensus
+control.oracle.prob_2_miners PROB_2MINERS   
+control.oracle.hr_cpu 50
+control.oracle.hr_gpu 1000
+control.oracle.hr_fpga 800
+control.oracle.hr_asic 1000000
+control.oracle.miner_protocol miner
+control.oracle.step CYCLE_LENGTH/2
