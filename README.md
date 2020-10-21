@@ -7,3 +7,10 @@ A blockchain network simulator developed based on [PeerSim](http://peersim.sourc
 - ***simulation-consensus***: Diverse consensus protocols can be implemented according to the specific blockchain system.
 
 - ***simulation-data***: Common blockchain data structures can be customized, such as transactions and blocks.
+
+## Running the simulator
+Running the simulator means running an experiment of PeerSim. After defining the parameters in configuration file `ConfigForBitcoin.txt`, open the terminal and type 
+
+`java -jar Bitcoin.jar peersim.Simulator ConfigForBitcoin.txt` 
+
+to run the simulator.
